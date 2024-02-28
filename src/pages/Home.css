@@ -1,0 +1,37 @@
+.home {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.card-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Additional styles for TitleCard can remain the same */
+
+/* Home.css */
+
+/* Custom styles for modal content */
+.modal-body {
+  margin-bottom: 20px;
+}
+
+/* Margin for headlines */
+h5 {
+  margin-bottom: 10px;
+}
+
+/* Margin for buttons */
+.modal-body .btn {
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+/* Margin for form inputs */
+.modal-body .form-group {
+  margin-bottom: 15px;
+}
