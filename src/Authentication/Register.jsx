@@ -94,7 +94,7 @@ const Registration = () => {
   };
 
   return (
-    <div style={{backgroundColor:'#dde4f4', minHeight: '100vh'}}>
+    <div style={{backgroundColor:'#dde4f4', minHeight: '100vh', display: 'flex', 'alignItems':'center'}}>
 
     <div className="container pt-2">
     <div className="row justify-content-center">
