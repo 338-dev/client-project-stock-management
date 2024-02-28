@@ -5,11 +5,13 @@ import Button from '../components/Button';
 
 import { BASE_URL } from '../constant/constant'
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [phone_no, setPhoneNo] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState({});
+  const navigate = useNavigate();
 
   
   const validateFields = (fields) => {
@@ -26,24 +28,9 @@ const Login = () => {
     // Password validation
     if (!fields.password || !fields.password.trim()) {
       errors.password = 'Password is required.';
-    } else if (fields.password.length < 8) {
-      errors.password = 'Password must be at least 8 characters long.';
+    } else if (fields.password.length < 5) {
+      errors.password = 'Password must be at least 5 characters long.';
     }
-  
-    // Username validation (for registration)
-    if (fields.userLogin && fields.userLogin.length < 5) {
-      errors.userLogin = 'Username must be at least 5 characters long.';
-    }
-  
-    // Name validation (for registration)
-    if (fields.firstName && !fields.firstName.trim()) {
-      errors.firstName = 'First name is required.';
-    }
-  
-    if (fields.lastName && !fields.lastName.trim()) {
-      errors.lastName = 'Last name is required.';
-    }
-  
     setErrorMessage(errors)
     return errors;
   };
@@ -70,20 +57,26 @@ const Login = () => {
       const data = await response.data;
       localStorage.setItem('userDetails',JSON.stringify(data))
 
+      
       // Handle successful login (e.g., redirect or store token)
       Alert.success('Login successful!');
+      navigate('/')
       // ...
     } catch (error) {
-      setErrorMessage(error.response.data.message || 'Login failed');
-      Alert.error(errorMessage);
+      
+      const msg = error.response.data;
+      const k = Object.values(msg)[0];
+      Alert.error(k || "login failed");
     }
   };
 
   return (
-    <div className="container mt-4">
+    <div style={{backgroundColor:'#dde4f4', minHeight: '100vh'}}>
+
+    <div className="container pt-2">
     <div className="row justify-content-center">
-      <div className="col-md-6 col-sm-8">
-        <div className="card">
+      <div className="col-md-8 col-lg-4 col-sm-8 col-xs-6">
+        <div className="card"  style={{backgroundColor:"#f0f7ff", borderRadius: '30px'}}>
           <div className="card-body">
             <h5 className="card-title text-center mb-3">Login</h5>
           
@@ -95,6 +88,8 @@ const Login = () => {
         value={phone_no}
         onChange={(e) => setPhoneNo(e.target.value)}
         required
+        errorMessage={errorMessage}
+        placeholder="+91xxxxxxxxx"
       />
       <FormInput
         label="Password"
@@ -104,14 +99,21 @@ const Login = () => {
         onChange={(e) => setPassword(e.target.value)}
         required
         minLength={8}
+        errorMessage={errorMessage}
+        placeholder="********"
       />
       <Button type="submit">Login</Button>
     </form>
+    <div className="text-end mt-2">
+          <small onClick={()=>navigate('/register')} style={{'cursor':'pointer'}}>New user? Register</small>
+        </div>
     </div>
         </div>
       </div>
     </div>
   </div>
+  </div>
+
   );
 };
 

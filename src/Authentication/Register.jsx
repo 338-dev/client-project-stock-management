@@ -4,15 +4,17 @@ import FormInput from '../components/FormInput';
 import Button from '../components/Button';
 import { BASE_URL } from '../constant/constant';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Registration = () => {
   // State for form fields and errors
   const [phone_no, setPhoneNo] = useState('');
-  const [userLogin, setUserLogin] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [errorMessage, setErrorMessage] = useState({});
+  const [userRole, setUserRole] = useState(''); // Initial selected role
+  const navigate = useNavigate();
 
   const validateFields = (fields) => {
     const errors = {};
@@ -27,27 +29,27 @@ const Registration = () => {
     // Password validation
     if (!fields.password || !fields.password.trim()) {
       errors.password = 'Password is required.';
-    } else if (fields.password.length < 8) {
-      errors.password = 'Password must be at least 8 characters long.';
-    }
-  
-    // Username validation (for registration)
-    if (fields.userLogin && fields.userLogin.length < 5) {
-      errors.userLogin = 'Username must be at least 5 characters long.';
+    } else if (fields.password.length < 5) {
+      errors.password = 'Password must be at least 5 characters long.';
     }
   
     // Name validation (for registration)
-    if (fields.firstName && !fields.firstName.trim()) {
+    if (!fields.firstName || !fields.firstName.trim()) {
       errors.firstName = 'First name is required.';
     }
   
-    if (fields.lastName && !fields.lastName.trim()) {
+    if (!fields.lastName || !fields.lastName.trim()) {
       errors.lastName = 'Last name is required.';
     }
+
+    if (!fields.userRole || !fields.userRole.trim()) {
+      errors.userRole = 'User role name is required.';
+    }
+    console.log(fields);
     setErrorMessage(errors)
     return errors;
   };
-  
+  console.log(errorMessage);
   const handleRegistration = async (e) => {
     e.preventDefault(); // Prevent default form submission
 
@@ -56,20 +58,20 @@ const Registration = () => {
       password,
       firstName,
       lastName,
-      // ... other fields (if applicable)
+      userRole
     };
     const errors = validateFields(fields);
+    console.error(errors);
 
     if (Object.keys(errors).length > 0) 
       return
       // Display error messages
-      console.error(errors);
       // You can use Alert component or other methods to display errors to the user
     
     try {
       const response = await axios.post(`${BASE_URL}/accounts/register/`, {
         phone_no,
-        userLogin,
+        [userRole]: true,
         password,
         first_name: firstName,
         last_name: lastName,
@@ -77,18 +79,27 @@ const Registration = () => {
 
       // Handle successful registration (e.g., redirect or confirmation message)
       Alert.success('Registration successful!');
+      navigate('/login');
       // ...
     } catch (error) {
-      setErrorMessage(error.response.data.message || 'Registration failed');
+      const msg = error.response.data;
+      const k = Object.values(msg)[0];
+      setErrorMessage(k[0] || 'Registration failed');
       Alert.error(errorMessage);
     }
   };
 
+  const handleRoleChange = (e) => {
+    setUserRole(e.target.value);
+  };
+
   return (
-    <div className="container mt-4">
+    <div style={{backgroundColor:'#dde4f4', minHeight: '100vh'}}>
+
+    <div className="container pt-2">
     <div className="row justify-content-center">
-      <div className="col-md-6 col-sm-8">
-        <div className="card">
+      <div className="col-md-8 col-lg-4 col-sm-8 col-xs-6">
+        <div className="card" style={{backgroundColor:"#f0f7ff", borderRadius: '30px'}}>
           <div className="card-body">
             <h5 className="card-title text-center mb-3">Register</h5>
           
@@ -100,15 +111,8 @@ const Registration = () => {
         value={phone_no}
         onChange={(e) => setPhoneNo(e.target.value)}
         required
-      />
-      <FormInput
-        label="Username"
-        type="text"
-        name="userLogin"
-        value={userLogin}
-        onChange={(e) => setUserLogin(e.target.value)}
-        required
-        minLength={5}
+        errorMessage={errorMessage}
+        placeholder="+91xxxxxxxxx"
       />
       <FormInput
         label="Password"
@@ -118,6 +122,8 @@ const Registration = () => {
         onChange={(e) => setPassword(e.target.value)}
         required
         minLength={8}
+        errorMessage={errorMessage}
+        placeholder="********"
       />
       <FormInput
         label="First Name"
@@ -126,6 +132,8 @@ const Registration = () => {
         value={firstName}
         onChange={(e) => setFirstName(e.target.value)}
         required
+        errorMessage={errorMessage}
+        placeholder="Enter your First Name"
       />
       <FormInput
         label="Last Name"
@@ -134,15 +142,29 @@ const Registration = () => {
         value={lastName}
         onChange={(e) => setLastName(e.target.value)}
         required
+        errorMessage={errorMessage}
+        placeholder="Enter your Last Name"
       />
-      {/* {errorMessage && <p className="error-message">{errorMessage}</p>} */}
+<select className="form-select mt-4" aria-label="Select user role" onChange={handleRoleChange} style={{borderRadius: '30px'}}>
+<option value="" disabled selected={userRole === ''}>Choose role</option>
+  <option value="tailor" selected={userRole === 'tailor'}>Tailor</option>
+  <option value="stock_management" selected={userRole === 'stock_management'}>Stock Management</option>
+  <option value="userLogin" selected={userRole === 'userLogin'}>User Login</option>
+</select>
+      {errorMessage?.userRole && <p className="error-message" style={{color: 'red',
+  fontSize: '0.8rem', marginLeft:'8px'}}>{errorMessage?.userRole}</p>}
       <Button type="submit">Register</Button>
     </form>
+    <div className="text-end mt-2">
+          <small onClick={()=>navigate('/login')} style={{'cursor':'pointer'}}>Already a user? Login</small>
+        </div>
     </div>
         </div>
       </div>
     </div>
   </div>
+  </div>
+
   );
 };
 

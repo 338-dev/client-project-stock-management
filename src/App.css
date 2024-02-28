@@ -48,3 +48,14 @@ body {
 input {
   outline-style: none;
 }
+
+body {
+  background-color: #dde4f4;
+	user-select: none;
+	overflow-y: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: hsl(218deg 50% 91%);
+	height: 100vh;
+}
