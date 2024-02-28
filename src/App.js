@@ -1,25 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './Authentication/Login'; // Import your Login component
+import Registration from './Authentication/Register'; // Import your Registration component (not included in provided prompt)
+import Home from './pages/Home'; // Add a Home page (optional)
 
-function App() {
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} index />
+        <Route path="/register" element={<Registration />} />
+        <Route path="/" element={<Home />} /> {/* Replace Home component with your protected route if needed */}
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
