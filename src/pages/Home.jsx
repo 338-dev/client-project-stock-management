@@ -1,12 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Home.css";
 import TitleCard from "../components/TiltleCard/TitleCard";
 import { Modal, Button, Form } from "react-bootstrap";
+import { useNavigate } from "react-router";
 const Home = () => {
   const [showGallaModal, setShowGallaModal] = useState(false);
   const [selectedGallaOption, setSelectedGallaOption] = useState(null);
   const [selectedCashInOption, setSelectedCashInOption] = useState(null);
+  const navigate = useNavigate();
 
+  useEffect(()=>{
+    if(!localStorage.getItem('userDetails')){
+      navigate('/login');
+    }
+  },[])
   const handleGallaClick = () => {
     setShowGallaModal(true);
   };
@@ -38,6 +45,8 @@ const Home = () => {
         <TitleCard title="Customer Ledger" />
         <TitleCard title="Shop Expense" />
         <TitleCard title="Personal Expense" />
+        <TitleCard title="Price List" />
+        <TitleCard title="Price List" />
         <TitleCard title="Price List" />
       </div>
 

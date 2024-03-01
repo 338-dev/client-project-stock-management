@@ -64,8 +64,8 @@ const Login = () => {
       // ...
     } catch (error) {
       
-      const msg = error.response.data;
-      const k = Object.values(msg)[0];
+      const msg = error.response?.data;
+      const k = msg && Object.values(msg)[0];
       Alert.error(k || "login failed");
     }
   };
