@@ -5,6 +5,7 @@ import Button from '../components/Button';
 import { BASE_URL } from '../constant/constant';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { Spinner } from 'react-bootstrap';
 
 const Registration = () => {
   // State for form fields and errors
@@ -15,6 +16,8 @@ const Registration = () => {
   const [errorMessage, setErrorMessage] = useState({});
   const [userRole, setUserRole] = useState(''); // Initial selected role
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
 
   const validateFields = (fields) => {
     const errors = {};
@@ -68,6 +71,8 @@ const Registration = () => {
       // Display error messages
       // You can use Alert component or other methods to display errors to the user
     
+    setLoading(true);
+
     try {
       const response = await axios.post(`${BASE_URL}/accounts/register/`, {
         phone_no,
@@ -82,11 +87,13 @@ const Registration = () => {
       navigate('/login');
       // ...
     } catch (error) {
-      const msg = error.response.data;
-      const k = Object.values(msg)[0];
+      const msg = error.response?.data;
+      const k = msg && Object.values(msg)[0];
       setErrorMessage(k[0] || 'Registration failed');
       Alert.error(errorMessage);
     }
+    setLoading(false);
+
   };
 
   const handleRoleChange = (e) => {
@@ -153,7 +160,7 @@ const Registration = () => {
 </select>
       {errorMessage?.userRole && <p className="error-message" style={{color: 'red',
   fontSize: '0.8rem', marginLeft:'8px'}}>{errorMessage?.userRole}</p>}
-      <Button type="submit">Register</Button>
+      <Button type="submit"> {loading ? <Spinner animation="border" />: 'Register'}</Button>
     </form>
     <div className="text-end mt-2">
           <small onClick={()=>navigate('/login')} style={{'cursor':'pointer'}}>Already a user? Login</small>

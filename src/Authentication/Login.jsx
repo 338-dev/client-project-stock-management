@@ -6,10 +6,13 @@ import Button from '../components/Button';
 import { BASE_URL } from '../constant/constant'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { Spinner } from 'react-bootstrap';
 
 const Login = () => {
   const [phone_no, setPhoneNo] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState({});
   const navigate = useNavigate();
 
@@ -49,6 +52,7 @@ const Login = () => {
       return;
     }
 
+    setLoading(true);
     try {
       const response = await axios.post(`${BASE_URL}/accounts/login/`, {
         phone_no,
@@ -68,6 +72,8 @@ const Login = () => {
       const k = msg && Object.values(msg)[0];
       Alert.error(k || "login failed");
     }
+    setLoading(false);
+
   };
 
   return (
@@ -102,7 +108,8 @@ const Login = () => {
         errorMessage={errorMessage}
         placeholder="********"
       />
-      <Button type="submit">Login</Button>
+      <Button type="submit">      {loading ? <Spinner animation="border" />: 'Login'}
+</Button>
     </form>
     <div className="text-end mt-2">
           <small onClick={()=>navigate('/register')} style={{'cursor':'pointer'}}>New user? Register</small>
