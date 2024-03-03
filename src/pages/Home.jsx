@@ -7,6 +7,8 @@ import StockManagementModal from "../components/Stock";
 import Header from "../components/header";
 import axios from "axios";
 import Alert from "../components/Alert";
+import TransactionTable from "../components/CashInCashOut";
+import { BASE_URL } from "../constant/constant";
 
 const Home = () => {
   const [showGallaModal, setShowGallaModal] = useState(false);
@@ -35,20 +37,25 @@ const Home = () => {
   useEffect(() => {
     // Get auth token from localStorage
     const userDetails = localStorage.getItem("userDetails");
-    if (userDetails) {
+    const userDetailsExpire = localStorage.getItem("userDetailsExpire");
+
+    const isValidTime = new Date() < new Date(userDetailsExpire)
+    if (userDetails && isValidTime) {
       const parsedDetails = JSON.parse(userDetails);
       setAuthToken(parsedDetails?.tokens?.access);
+    } else {
+      navigate('/login');
     }
   }, []);
 
 
   const navigate = useNavigate();
 
-  useEffect(()=>{
-    if(!localStorage.getItem('userDetails')){
+  useEffect(() => {
+    if (!localStorage.getItem('userDetails')) {
       navigate('/login');
     }
-  },[])
+  }, [])
   const handleGallaClick = () => {
     setShowGallaModal(true);
   };
@@ -104,6 +111,8 @@ const Home = () => {
   const handleCustomerPaymentSubmit = () => {
     // Check for form validation
     const errors = {};
+    setFormErrors({});
+
     if (!customerCode.trim()) {
       errors.customerCode = "Customer code is required";
     }
@@ -136,18 +145,18 @@ const Home = () => {
 
     axios
       .post(
-        "https://stock-management-be.vercel.app/galla/customer-payment/",
+        `${BASE_URL}/galla/customer-payment/`,
         formData,
         config
       )
       .then((response) => {
-      Alert.success('Successfully submitted!');
-
+        Alert.success('Successfully submitted!');
+        handleCloseModal()
         console.log(response.data);
         // Handle success response
       })
       .catch((error) => {
-      Alert.error('Error submitting data');
+        Alert.error('Error submitting data');
         console.log("error", error);
         // Handle error
       });
@@ -181,17 +190,18 @@ const Home = () => {
 
     axios
       .post(
-        "https://stock-management-be.vercel.app/galla/cash-in-cash-out/",
+        `${BASE_URL}/galla/cash-in-cash-out/`,
         formData,
         config
       )
       .then((response) => {
-      Alert.success('Successfully submitted!');
+        Alert.success('Successfully submitted!');
         console.log(response.data);
+        handleCloseModal();
         // Handle success response
       })
       .catch((error) => {
-      Alert.error('Error submitting data');
+        Alert.error('Error submitting data');
 
         console.log("error", error);
         // Handle error
@@ -204,6 +214,8 @@ const Home = () => {
   const handleTailorPaymentSubmit = () => {
     // Check for form validation
     const errors = {};
+    setFormErrors({});
+
     if (!tailorName.trim()) {
       errors.tailorName = "Tailor name is required";
     }
@@ -214,7 +226,7 @@ const Home = () => {
       errors.amountTailor = "Amount is required";
     }
     if (!tailorBillNumber) {
-      errors.tailorBillNumber = "Receipt is required";
+      errors.tailorBillNumber = "Bill number is required";
     }
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -237,18 +249,18 @@ const Home = () => {
 
     axios
       .post(
-        "https://stock-management-be.vercel.app/galla/cash-in-cash-out/",
+        `${BASE_URL}/galla/cash-in-cash-out/`,
         formData,
         config
       )
       .then((response) => {
         console.log(response.data);
-      Alert.success('Successfully submitted!');
-
+        Alert.success('Successfully submitted!');
+        handleCloseModal();
         // Handle success response
       })
       .catch((error) => {
-      Alert.error('Error submitting data');
+        Alert.error('Error submitting data');
 
         console.log("error", error);
         // Handle error
@@ -257,6 +269,7 @@ const Home = () => {
   const handleShopExpenseSubmit = () => {
     // Check for form validation
     const errors = {};
+    setFormErrors({});
 
     if (!amountExpense) {
       errors.amountTailor = "Amount is required";
@@ -279,17 +292,17 @@ const Home = () => {
 
     axios
       .post(
-        "https://stock-management-be.vercel.app/galla/cash-in-cash-out/",
+        `${BASE_URL}/galla/cash-in-cash-out/`,
         formData,
         config
       )
       .then((response) => {
         console.log(response.data);
-      Alert.success('Successfully submitted!');
+        Alert.success('Successfully submitted!');
         // Handle success response
       })
       .catch((error) => {
-      Alert.error('Error submitting data');
+        Alert.error('Error submitting data');
 
         console.log("error", error);
         // Handle error
@@ -297,10 +310,11 @@ const Home = () => {
   };
   const handleShopOrPersonalyExpenseSubmit = (expanseName) => {
     // Check for form validation
+    setFormErrors({});
     const errors = {};
 
     if (!amountExpense) {
-      errors.amountTailor = "Amount is required";
+      errors.amountExpense = "Amount is required";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -321,18 +335,18 @@ const Home = () => {
 
     axios
       .post(
-        "https://stock-management-be.vercel.app/galla/cash-in-cash-out/",
+        `${BASE_URL}/galla/cash-in-cash-out/`,
         formData,
         config
       )
       .then((response) => {
         console.log(response.data);
-      Alert.success('Successfully submitted!');
-
+        Alert.success('Successfully submitted!');
+        handleCloseModal();
         // Handle success response
       })
       .catch((error) => {
-      Alert.error('Error submitting data');
+        Alert.error('Error submitting data');
 
         console.log("error", error);
         // Handle error
@@ -372,11 +386,11 @@ const Home = () => {
 
   return (
     <>
-      <Header/>
+      <Header />
 
       <div className="home">
         <div className="card-group">
-          <TitleCard title="Stock" color="#FF5733" onClick={()=>setShowStockModal(true)}/>
+          <TitleCard title="Stock" color="#FF5733" onClick={() => setShowStockModal(true)} />
           <TitleCard title="Galla" onClick={handleGallaClick} color="#FFC300" />
           <TitleCard title="Sales" color="#FF5733" />
           <TitleCard title="Purchase" color="#33FFBD" />
@@ -386,8 +400,8 @@ const Home = () => {
           <TitleCard title="Shop Expense" color="#FF5733" />
           <TitleCard title="Personal Expense" color="#FFC300" />
           <TitleCard title="Price List" color="#FF5733" />
-          <TitleCard title="Customer Code" color="#8D33FF" onClick={()=>setShowCustomerModal(true)}/>
-          <TitleCard title="Tailor Code" color="#FF33E9" onClick={()=>setShowTailorModal(true)}/>
+          <TitleCard title="Customer Code" color="#8D33FF" onClick={() => setShowCustomerModal(true)} />
+          <TitleCard title="Tailor Code" color="#FF33E9" onClick={() => setShowTailorModal(true)} />
         </div>
 
         {/* Galla Modal */}
@@ -408,6 +422,12 @@ const Home = () => {
               onClick={() => handleGallaOptionClick("Cash Out")}
             >
               Cash Out
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/galla-ledger")}
+            >
+              Cash In/Cash Out Entry
             </Button>
             {selectedGallaOption === "Cash In" && (
               <>
@@ -497,6 +517,11 @@ const Home = () => {
                         onChange={(e) => setAmountCash(e.target.value)}
                         required
                       />
+                       {formErrors.amountCash && (
+                        <Form.Text className="text-danger">
+                          {formErrors.amountCash}
+                        </Form.Text>
+                      )}
                     </Form.Group>
                     <Form.Group controlId="billNumber">
                       <Form.Label>Bill Number</Form.Label>
@@ -507,6 +532,11 @@ const Home = () => {
                         onChange={(e) => setBillNumber(e.target.value)}
                         required
                       />
+                       {formErrors?.billNumber && (
+                        <Form.Text className="text-danger">
+                          {formErrors?.billNumber}
+                        </Form.Text>
+                      )}
                     </Form.Group>
                   </Form>
                 )}
@@ -590,9 +620,9 @@ const Home = () => {
                         value={tailorBillNumber}
                         required
                       />
-                      {formErrors.billNumber && (
+                      {formErrors.tailorBillNumber && (
                         <Form.Text className="text-danger">
-                          {formErrors.billNumber}
+                          {formErrors.tailorBillNumber}
                         </Form.Text>
                       )}
                     </Form.Group>
@@ -617,13 +647,13 @@ const Home = () => {
                       )}
                     </Form.Group>
                     <Form.Check
-      type="checkbox"
-      id="default-checkbox"
-      label="Shop Expense"
-      defaultChecked={true} // Set the checkbox to be checked initially
-      checked={true} // Use state to update checkbox state dynamically (optional)
-      onChange={()=>{}}
-    />
+                      type="checkbox"
+                      id="default-checkbox"
+                      label="Shop Expense"
+                      defaultChecked={true} // Set the checkbox to be checked initially
+                      checked={true} // Use state to update checkbox state dynamically (optional)
+                      onChange={() => { }}
+                    />
                     {/* <Form.Group controlId="reason">
                       <Form.Label>Reason</Form.Label>
                       <Form.Control
@@ -660,13 +690,13 @@ const Home = () => {
                       )}
                     </Form.Group>
                     <Form.Check
-      type="checkbox"
-      id="default-checkbox"
-      label="Personal Expense"
-      defaultChecked={true} // Set the checkbox to be checked initially
-      checked={true} // Use state to update checkbox state dynamically (optional)
-      onChange={()=>{}}
-    />
+                      type="checkbox"
+                      id="default-checkbox"
+                      label="Personal Expense"
+                      defaultChecked={true} // Set the checkbox to be checked initially
+                      checked={true} // Use state to update checkbox state dynamically (optional)
+                      onChange={() => { }}
+                    />
                     {/* <Form.Group controlId="reason">
                       <Form.Label>Reason</Form.Label>
                       <Form.Control
@@ -688,6 +718,9 @@ const Home = () => {
                 {/* Add other Cash Out options and their respective forms here */}
               </>
             )}
+            {
+              selectedGallaOption === "Cash In Cash Out Entry" && <TransactionTable />
+            }
           </Modal.Body>
           <Modal.Footer>
             <Button
@@ -696,9 +729,9 @@ const Home = () => {
             >
               Close
             </Button>
-            <Button variant="primary" onClick={handleModalSubmit}>
+            <Button variant="primary" onClick={handleModalSubmit} disabled={!(selectedCashInOption || selectedCashOutOption)}>
               {selectedGallaOption === "Cash In" &&
-              selectedCashInOption === "Customer Payment"
+                selectedCashInOption === "Customer Payment"
                 ? "Submit Customer Payment"
                 : "Submit Cash In/Out"}
             </Button>
@@ -708,92 +741,92 @@ const Home = () => {
         {/* Add modals for other options as needed */}
 
         <Modal show={showCustomerModal} onHide={onHideModal}>
-      <Modal.Header closeButton>
-        <Modal.Title>Customer Options</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Button variant="primary" onClick={() => handleOptionClick('Create Customer')}>
-          Create Customer
-        </Button>
-        <Button variant="secondary" onClick={() => handleOptionClick('Delete Customer')}>
-          Delete Customer
-        </Button>
+          <Modal.Header closeButton>
+            <Modal.Title>Customer Options</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Button variant="primary" onClick={() => handleOptionClick('Create Customer')}>
+              Create Customer
+            </Button>
+            <Button variant="secondary" onClick={() => handleOptionClick('Delete Customer')}>
+              Delete Customer
+            </Button>
 
-        {selectedOption === 'Create Customer' && (
-          <Form>
-            <Form.Group controlId="customerName">
-              <Form.Label>Customer Name</Form.Label>
-              <Form.Control type="text" placeholder="Enter customer name" />
-            </Form.Group>
-            <Form.Group controlId="customerCode">
-              <Form.Label>Customer Code</Form.Label>
-              <Form.Control type="text" placeholder="Enter customer code" />
-            </Form.Group>
-          </Form>
-        )}
+            {selectedOption === 'Create Customer' && (
+              <Form>
+                <Form.Group controlId="customerName">
+                  <Form.Label>Customer Name</Form.Label>
+                  <Form.Control type="text" placeholder="Enter customer name" />
+                </Form.Group>
+                <Form.Group controlId="customerCode">
+                  <Form.Label>Customer Code</Form.Label>
+                  <Form.Control type="text" placeholder="Enter customer code" />
+                </Form.Group>
+              </Form>
+            )}
 
-        {selectedOption === 'Delete Customer' && (
-          <Form>
-            <Form.Group controlId="customerCode">
-              <Form.Label>Customer Code</Form.Label>
-              <Form.Control type="text" placeholder="Enter customer code" />
-            </Form.Group>
-          </Form>
-        )}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onHideModal}>
-          Close
-        </Button>
-        <Button variant="primary" disabled={!selectedOption}>
-          {selectedOption === 'Create Customer' ? 'Save Customer' : 'Delete Customer'}
-        </Button>
-      </Modal.Footer>
-    </Modal>
-    
+            {selectedOption === 'Delete Customer' && (
+              <Form>
+                <Form.Group controlId="customerCode">
+                  <Form.Label>Customer Code</Form.Label>
+                  <Form.Control type="text" placeholder="Enter customer code" />
+                </Form.Group>
+              </Form>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={onHideModal}>
+              Close
+            </Button>
+            <Button variant="primary" disabled={!selectedOption}>
+              {selectedOption === 'Create Customer' ? 'Save Customer' : 'Delete Customer'}
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
-    <Modal show={showTailorModal} onHide={onHideTailorModal}>
-      <Modal.Header closeButton>
-        <Modal.Title>Tailor Management</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Button variant="primary" onClick={() => handleTailorActionClick('addTailor')}>
-          Add Tailor
-        </Button>
-        <Button variant="secondary" onClick={() => handleTailorActionClick('deleteTailor')}>
-          Delete Tailor
-        </Button>
 
-        {selectedTailorAction === 'addTailor' && (
-          <Form onSubmit={()=>{}}>
-            <Form.Group controlId="name">
-              <Form.Label>Tailor Name</Form.Label>
-              <Form.Control type="text" placeholder="Enter tailor name" value={tailorData.name} onChange={handleTailorInputChange} required />
-            </Form.Group>
-            <Form.Group controlId="code">
-              <Form.Label>Tailor Code</Form.Label>
-              <Form.Control type="text" placeholder="Enter tailor code" value={tailorData.code} onChange={handleTailorInputChange} required />
-            </Form.Group>
-          </Form>
-        )}
+        <Modal show={showTailorModal} onHide={onHideTailorModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Tailor Management</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Button variant="primary" onClick={() => handleTailorActionClick('addTailor')}>
+              Add Tailor
+            </Button>
+            <Button variant="secondary" onClick={() => handleTailorActionClick('deleteTailor')}>
+              Delete Tailor
+            </Button>
 
-        {selectedTailorAction === 'deleteTailor' && (
-          <>
-          <p>Tailor Code</p>
-          <Form.Control type="text" placeholder="Tailor Code" id="code" value={tailorData.code} onChange={handleTailorInputChange} />
-          </>
-        )}
-      </Modal.Body>
-      <Modal.Footer>
-      <Button variant="primary" type="submit" onClick={()=>{}}>
-          {selectedTailorAction === 'addTailor' ? 'Save Tailor' : 'Delete Tailor'}
-          </Button>
-        <Button variant="secondary" onClick={onHideTailorModal}>
-          Close
-        </Button>
-      </Modal.Footer>
-    </Modal>
-    <StockManagementModal onHideStockModal={()=>setShowStockModal(false)} showStockModal={showStockModal}/>
+            {selectedTailorAction === 'addTailor' && (
+              <Form onSubmit={() => { }}>
+                <Form.Group controlId="name">
+                  <Form.Label>Tailor Name</Form.Label>
+                  <Form.Control type="text" placeholder="Enter tailor name" value={tailorData.name} onChange={handleTailorInputChange} required />
+                </Form.Group>
+                <Form.Group controlId="code">
+                  <Form.Label>Tailor Code</Form.Label>
+                  <Form.Control type="text" placeholder="Enter tailor code" value={tailorData.code} onChange={handleTailorInputChange} required />
+                </Form.Group>
+              </Form>
+            )}
+
+            {selectedTailorAction === 'deleteTailor' && (
+              <>
+                <p>Tailor Code</p>
+                <Form.Control type="text" placeholder="Tailor Code" id="code" value={tailorData.code} onChange={handleTailorInputChange} />
+              </>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary" type="submit" onClick={() => { }}>
+              {selectedTailorAction === 'addTailor' ? 'Save Tailor' : 'Delete Tailor'}
+            </Button>
+            <Button variant="secondary" onClick={onHideTailorModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <StockManagementModal onHideStockModal={() => setShowStockModal(false)} showStockModal={showStockModal} />
       </div>
     </>
   );

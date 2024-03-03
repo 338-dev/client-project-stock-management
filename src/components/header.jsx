@@ -15,7 +15,7 @@ function Header() {
   return (
     <Navbar bg="light" expand="lg" sticky="top">
       <Container>
-        <Navbar.Brand>
+        <Navbar.Brand onClick={()=>{navigate('/')}} style={{cursor: 'pointer'}}>
         <Image
             src={Logo} // Adjust the path according to your project structure
             width="40"

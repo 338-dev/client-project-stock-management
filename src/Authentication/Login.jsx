@@ -37,7 +37,11 @@ const Login = () => {
     setErrorMessage(errors)
     return errors;
   };
-
+  const addHours = (date, hours) => {
+    const result = new Date(date);
+    result.setTime(result.getTime() + hours * 60 * 60 * 1000);
+    return result;
+  };
   const handleLogin = async (e) => {
     e.preventDefault(); // Prevent default form submission
 
@@ -59,7 +63,9 @@ const Login = () => {
         password,
       });
       const data = await response.data;
+      
       localStorage.setItem('userDetails',JSON.stringify(data))
+      localStorage.setItem('userDetailsExpire',addHours(new Date(), 5))
 
       
       // Handle successful login (e.g., redirect or store token)
