@@ -203,7 +203,7 @@ function TransactionTable() {
           <div className="col-md-10 col-lg-10 col-sm-10 col-xs-10">
             <div className="card" style={{ backgroundColor: "#f0f7ff", borderRadius: '30px', paddingTop: '10px' }}>
               {finalAmountTotal!==null && <h4 className='text-center'>Final amount:
-              <span className='text-danger'>
+              <span className={Number(finalAmountTotal)<0?'text-danger': 'text-success'}>
                 {` ₹`+finalAmountTotal}
                 </span>
                 </h4>}
@@ -258,13 +258,13 @@ function TransactionTable() {
                           <td>{new Date(transaction.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</td>
                           <td>{transaction.bill_number || '—'}</td>
                           <td>{transaction.expense_name || '—'}</td>
-                          <td className='text-success'>
+                          <td className={'text-danger'}>
 
                             {transaction.amount_debit
                               ? `↓ ₹ ${transaction.amount_debit}`
                               : '—'}
                           </td>
-                          <td className='text-danger'>
+                          <td className='text-success'>
 
                             {transaction.amount_credit ? `↑ ₹ ${transaction.amount_credit}` : '—'}
                           </td>

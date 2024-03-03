@@ -33,6 +33,8 @@ const Home = () => {
   const [tailorName, setTailorName] = useState("");
   const [tailorCode, setTailorCode] = useState("");
   const [tailorBillNumber, setTailorBillNumber] = useState("");
+  const [cashPaymentCustomerName, setCashPaymentCustomerName] = useState("");
+
 
   useEffect(() => {
     // Get auth token from localStorage
@@ -171,6 +173,10 @@ const Home = () => {
     if (!billNumber) {
       errors.billNumber = "Bill Number is required";
     }
+    if (!cashPaymentCustomerName) {
+      errors.cashPaymentCustomerName = "Customer name is required";
+    }
+    
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -180,6 +186,9 @@ const Home = () => {
     formData.append("payment_type", "Cash payment");
     formData.append("amount_credit", amountCash);
     formData.append("bill_number", billNumber);
+    // formData.append("bill_number", billNumber);
+    formData.append("customer_name", cashPaymentCustomerName);
+    
 
     const config = {
       headers: {
@@ -216,9 +225,9 @@ const Home = () => {
     const errors = {};
     setFormErrors({});
 
-    if (!tailorName.trim()) {
-      errors.tailorName = "Tailor name is required";
-    }
+    // if (!tailorName.trim()) {
+    //   errors.tailorName = "Tailor name is required";
+    // }
     if (!tailorCode.trim()) {
       errors.tailorCode = "Tailor code is required";
     }
@@ -236,9 +245,11 @@ const Home = () => {
     const formData = new FormData();
     formData.append("expense_name", "Tailor payment");
     formData.append("amount_debit", amountTailor);
-    formData.append("tailer_name", tailorName);
+    // formData.append("tailer_name", tailorName);
     formData.append("tailer_code", tailorCode);
-    formData.append("bill_number", tailorBillNumber);
+    formData.append("bill_image", tailorBillNumber);
+
+    // formData.append("bill_number", tailorBillNumber);
 
     const config = {
       headers: {
@@ -261,7 +272,6 @@ const Home = () => {
       })
       .catch((error) => {
         Alert.error('Error submitting data');
-
         console.log("error", error);
         // Handle error
       });
@@ -317,6 +327,10 @@ const Home = () => {
       errors.amountExpense = "Amount is required";
     }
 
+    if (!reason) {
+      errors.reason = "Amount is required";
+    }
+
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -325,6 +339,8 @@ const Home = () => {
     const formData = new FormData();
     formData.append("expense_name", expanseName);
     formData.append("amount_debit", amountExpense);
+    formData.append("amount_used_for", reason);
+
 
     const config = {
       headers: {
@@ -538,6 +554,21 @@ const Home = () => {
                         </Form.Text>
                       )}
                     </Form.Group>
+                    <Form.Group controlId="cashPaymentCustomerName">
+                      <Form.Label>Customer Payment</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter customer name"
+                        value={cashPaymentCustomerName}
+                        onChange={(e) => setCashPaymentCustomerName(e.target.value)}
+                        required
+                      />
+                       {formErrors?.cashPaymentCustomerName && (
+                        <Form.Text className="text-danger">
+                          {formErrors?.cashPaymentCustomerName}
+                        </Form.Text>
+                      )}
+                    </Form.Group>
                   </Form>
                 )}
               </>
@@ -566,7 +597,7 @@ const Home = () => {
                 {/* Selected Cash Out Option: Tailor Payment */}
                 {selectedCashOutOption === "Tailor Payment" && (
                   <Form>
-                    <Form.Group controlId="tailorName">
+                    {/* <Form.Group controlId="tailorName">
                       <Form.Label>Tailor Name</Form.Label>
                       <Form.Control
                         type="text"
@@ -580,7 +611,7 @@ const Home = () => {
                           {formErrors.tailorName}
                         </Form.Text>
                       )}
-                    </Form.Group>
+                    </Form.Group> */}
                     <Form.Group controlId="tailorCode">
                       <Form.Label>Tailor Code</Form.Label>
                       <Form.Control
@@ -612,12 +643,12 @@ const Home = () => {
                       )}
                     </Form.Group>
                     <Form.Group controlId="receiptTailor">
-                      <Form.Label>Bill Number</Form.Label>
+                      <Form.Label>Bill Receipt</Form.Label>
                       <Form.Control
-                        type="text"
-                        onChange={(e) => setTailorBillNumber(e.target.value)}
-                        placeholder="Enter bill number"
-                        value={tailorBillNumber}
+                        type="file"
+                        onChange={(e) => setTailorBillNumber(e.target.files?.[0])}
+                        placeholder="Enter bill reciept"
+                        // value={tailorBillNumber}
                         required
                       />
                       {formErrors.tailorBillNumber && (
@@ -646,6 +677,22 @@ const Home = () => {
                         </Form.Text>
                       )}
                     </Form.Group>
+                    <Form.Group controlId="amountExpense">
+                      <Form.Label>Amount used for</Form.Label>
+                      <Form.Control
+                        // type="str"
+                        placeholder="Enter amount used for"
+                        value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                        required
+                      />
+                      {formErrors?.reason && (
+                        <Form.Text className="text-danger">
+                          {formErrors?.reason}
+                        </Form.Text>
+                      )}
+                    </Form.Group>
+
                     <Form.Check
                       type="checkbox"
                       id="default-checkbox"
@@ -689,6 +736,23 @@ const Home = () => {
                         </Form.Text>
                       )}
                     </Form.Group>
+                    <Form.Group controlId="amountExpense">
+                      <Form.Label>Amount used for</Form.Label>
+                      <Form.Control
+                        // type="str"
+                        placeholder="Enter amount used for"
+                        value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                        required
+                      />
+                      {formErrors?.reason && (
+                        <Form.Text className="text-danger">
+                          {formErrors.reason}
+                        </Form.Text>
+                      )}
+                    </Form.Group>
+                      
+
                     <Form.Check
                       type="checkbox"
                       id="default-checkbox"
