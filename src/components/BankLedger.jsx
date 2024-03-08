@@ -50,7 +50,7 @@ function BankLedger() {
 
           axios
             .delete(
-              `${BASE_URL}/stock/bank/${id}`,
+              `${BASE_URL}/stock/bank/${id}/`,
               config
             )
             .then(() => {
