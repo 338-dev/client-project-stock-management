@@ -408,16 +408,18 @@ const Home = () => {
         <div className="card-group">
           <TitleCard title="Stock" color="#FF5733" onClick={() => setShowStockModal(true)} />
           <TitleCard title="Galla" onClick={handleGallaClick} color="#FFC300" />
-          <TitleCard title="Sales" color="#FF5733" />
+          <TitleCard title="Sales" color="#FF5733" onClick={()=>{}}/>
           <TitleCard title="Purchase" color="#33FFBD" />
-          <TitleCard title="Bank" color="#338DFF" />
+          <TitleCard title="Bank Ledger" color="#338DFF" onClick={()=>navigate('/stock-bank-ledger')}/>
           <TitleCard title="Tailor Ledger" color="#8D33FF" />
-          <TitleCard title="Customer Ledger" color="#FF33E9" />
-          <TitleCard title="Shop Expense" color="#FF5733" />
+          <TitleCard title="Customer Ledger" color="#FF33E9" onClick={()=>{navigate('/customer-ledger')}}/>
+          <TitleCard title="Stock Ledger" color="#FFC300" onClick={()=>{navigate('/stock-ledger')}} />
+          
+          {/* <TitleCard title="Shop Expense" color="#FF5733" />
           <TitleCard title="Personal Expense" color="#FFC300" />
           <TitleCard title="Price List" color="#FF5733" />
           <TitleCard title="Customer Code" color="#8D33FF" onClick={() => setShowCustomerModal(true)} />
-          <TitleCard title="Tailor Code" color="#FF33E9" onClick={() => setShowTailorModal(true)} />
+          <TitleCard title="Tailor Code" color="#FF33E9" onClick={() => setShowTailorModal(true)} /> */}
         </div>
 
         {/* Galla Modal */}
