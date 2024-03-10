@@ -10,6 +10,7 @@ import Alert from "../components/Alert";
 import TransactionTable from "../components/CashInCashOut";
 import { BASE_URL } from "../constant/constant";
 import BankTransactionModal from "../components/BankModal";
+import SalesModal from "../components/Sales";
 
 const Home = () => {
   const [showGallaModal, setShowGallaModal] = useState(false);
@@ -38,6 +39,8 @@ const Home = () => {
   const [cashPaymentCustomerName, setCashPaymentCustomerName] = useState("");
 
 
+  const [showSalesModal, setShowSalesModal] = useState(false);
+
   useEffect(() => {
     // Get auth token from localStorage
     const userDetails = localStorage.getItem("userDetails");
@@ -51,7 +54,6 @@ const Home = () => {
       navigate('/login');
     }
   }, []);
-
 
   const navigate = useNavigate();
 
@@ -91,21 +93,21 @@ const Home = () => {
     // setSelectedCashInOption(null);
   };
 
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOption, setSelectedOption] = useState("");
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
   };
 
-  const [selectedTailorAction, setSelectedTailorAction] = useState('');
+  const [selectedTailorAction, setSelectedTailorAction] = useState("");
   const [tailorData, setTailorData] = useState({
-    name: '',
-    code: '',
+    name: "",
+    code: "",
   });
 
   const handleTailorActionClick = (action) => {
     setSelectedTailorAction(action);
-    setTailorData({ name: '', code: '' }); // Clear form data on action change
+    setTailorData({ name: "", code: "" }); // Clear form data on action change
   };
 
   const handleTailorInputChange = (event) => {
@@ -411,6 +413,12 @@ const Home = () => {
           <TitleCard title="Stock" color="#FF5733" onClick={() => setShowStockModal(true)} />
           <TitleCard title="Galla" onClick={handleGallaClick} color="#FFC300" />
           <TitleCard title="Sales Ledger" color="#FF5733" onClick={()=>{navigate('/sales-ledger')}}/>
+         
+          <TitleCard
+            title="Sales"
+            onClick={() => setShowSalesModal(true)}
+            color="#FF5733"
+          />
           <TitleCard title="Purchase" color="#33FFBD" />
           <TitleCard title="Bank" color="#FFC300" onClick={()=>setBankModal(true)}/>
           <TitleCard title="Bank Ledger" color="#338DFF" onClick={()=>navigate('/stock-bank-ledger')}/>
@@ -853,7 +861,6 @@ const Home = () => {
           </Modal.Footer>
         </Modal>
 
-
         <Modal show={showTailorModal} onHide={onHideTailorModal}>
           <Modal.Header closeButton>
             <Modal.Title>Tailor Management</Modal.Title>
@@ -895,8 +902,22 @@ const Home = () => {
             </Button>
           </Modal.Footer>
         </Modal>
-        <StockManagementModal onHideStockModal={() => setShowStockModal(false)} showStockModal={showStockModal} />
-        <BankTransactionModal handleClose={()=>{setBankModal(false)}} show={BankModal} auth={authToken}/>
+        {authToken && (
+          <>
+                  <BankTransactionModal handleClose={()=>{setBankModal(false)}} show={BankModal} auth={authToken}/>
+
+            <StockManagementModal
+              showStockModal={showStockModal}
+              setShowStockModal={setShowStockModal}
+              authToken={authToken}
+            />
+            <SalesModal
+              showStockModal={showSalesModal}
+              setShowStockModal={setShowSalesModal}
+              authToken={authToken}
+            />
+          </>
+        )}
       </div>
     </>
   );

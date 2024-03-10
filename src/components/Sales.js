@@ -3,18 +3,18 @@ import React, { useEffect, useState } from "react";
 import { Button, Modal, Form, InputGroup, FormControl } from "react-bootstrap";
 import Swal from "sweetalert2";
 
-const StockManagementModal = ({
-  showStockModal,
-  setShowStockModal,
-  authToken,
-}) => {
+const SalesModal = ({ showStockModal, setShowStockModal, authToken }) => {
   // const [showStockModal, setShowStockModal] = useState(false);
   const [stockTypes, setStockTypes] = useState([]);
   const [selectedStockType, setSelectedStockType] = useState("");
   const [stockTypeDetails, setStockTypeDetails] = useState({});
   const [quantity, setQuantity] = useState({});
   const [selectedStockSizes, setSelectedStockSizes] = useState([]);
-  const [stockPhoto, setStockPhoto] = useState();
+  const [bill, setBill] = useState();
+  const [customerName, setCustomerName] = useState("");
+  const [amount, setAmount] = useState("");
+  const [payementType, setPayementType] = useState("");
+  const [billNumber, setBillNumber] = useState("");
 
   useEffect(() => {
     // Fetch stock types when the component mounts
@@ -65,7 +65,7 @@ const StockManagementModal = ({
 
   console.log(quantity, "]]]]]]]]]]]]]]]]]]]");
   const handleModalSubmit = async () => {
-    if (!stockTypes || !stockPhoto) {
+    if (!customerName || !bill || !billNumber || !payementType || !stockTypes) {
       Swal.fire({
         icon: "warning",
         // title: "Error!",
@@ -79,23 +79,27 @@ const StockManagementModal = ({
         "Content-Type": "multipart/form-data",
       },
     };
-    const formData = new FormData();
     const orderedQuantity = [];
     selectedStockSizes.map((res) => {
       orderedQuantity.push(quantity[res] ?? 0);
     });
-    formData.append("quantity", orderedQuantity);
-    formData.append("stock_type", selectedStockType);
-    formData.append("stock_photo", stockPhoto);
+    const data = new FormData();
+    data.append("customer_name", customerName);
+    data.append("upload_bill", bill);
+    data.append("amount", amount);
+    data.append("quantity", orderedQuantity);
+    data.append("payment_type", payementType);
+    data.append("stock_type", selectedStockType);
+    data.append("bill_number", billNumber);
+
+    // formData.append("quantity", orderedQuantity);
+    // formData.append("stock_type", selectedStockType);
+    // formData.append("stock_photo", bill);
 
     console.log(config, "=====");
 
     await axios
-      .patch(
-        "https://stock-management-be.vercel.app/stock/stocks/",
-        formData,
-        config
-      )
+      .post("https://stock-management-be.vercel.app/stock/sales/", data, config)
       .then((response) => {
         setStockTypes(response.data);
       })
@@ -115,6 +119,37 @@ const StockManagementModal = ({
         <Modal.Title>Select Stock Type</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        <Form.Group controlId="customerName">
+          <Form.Label>Customer Name</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter customer name"
+            value={customerName}
+            onChange={(e) => setCustomerName(e.target.value)}
+            required
+          />
+          {/* {formErrors.customerName && (
+                        <Form.Text className="text-danger">
+                          {formErrors.customerName}
+                        </Form.Text>
+                      )} */}
+        </Form.Group>
+        <Form.Group controlId="amount">
+          <Form.Label>Amount</Form.Label>
+          <Form.Control
+            type="number"
+            placeholder="Enter amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+          />
+          {/* {formErrors.amount && (
+                        <Form.Text className="text-danger">
+                          {formErrors.amount}
+                        </Form.Text>
+                      )} */}
+        </Form.Group>
+
         <Form.Group controlId="stockType">
           <Form.Label>Select Stock Type</Form.Label>
           <Form.Control
@@ -163,11 +198,26 @@ const StockManagementModal = ({
           )}
         </Form>
 
+        <Form.Group controlId="billNumber">
+          <Form.Label>Bill Number</Form.Label>
+          <Form.Control
+            type="number"
+            placeholder="Enter amount"
+            value={billNumber}
+            onChange={(e) => setBillNumber(e.target.value)}
+          />
+          {/* {formErrors.amount && (
+                        <Form.Text className="text-danger">
+                          {formErrors.amount}
+                        </Form.Text>
+                      )} */}
+        </Form.Group>
+
         <Form.Group controlId="receipt">
           <Form.Label>Stock Photo</Form.Label>
           <Form.Control
             type="file"
-            onChange={(e) => setStockPhoto(e.target.files[0])}
+            onChange={(e) => setBill(e.target.files[0])}
             required
           />
           {/* {formErrors.receipt && (
@@ -175,6 +225,26 @@ const StockManagementModal = ({
                           {formErrors.receipt}
                         </Form.Text>
                       )} */}
+        </Form.Group>
+
+        <Form.Group controlId="payementType">
+          <Form.Label>Select Payement Type</Form.Label>
+          <Form.Control
+            as="select"
+            onChange={(e) => setPayementType(e.target.value)}
+            value={payementType}
+          >
+            <option value="">Select Stock Type</option>
+            <option key={"cash"} value={"cash"}>
+              cash
+            </option>
+            <option key={"credit"} value={"credit"}>
+              credit
+            </option>
+            <option key={"bank"} value={"bank"}>
+              bank
+            </option>
+          </Form.Control>
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>
@@ -189,4 +259,4 @@ const StockManagementModal = ({
   );
 };
 
-export default StockManagementModal;
+export default SalesModal;
