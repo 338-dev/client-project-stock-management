@@ -7,6 +7,7 @@ import StockManagementModal from "../components/Stock";
 import Header from "../components/header";
 import axios from "axios";
 import Alert from "../components/Alert";
+import SalesModal from "../components/Sales";
 
 const Home = () => {
   const [showGallaModal, setShowGallaModal] = useState(false);
@@ -32,6 +33,8 @@ const Home = () => {
   const [tailorCode, setTailorCode] = useState("");
   const [tailorBillNumber, setTailorBillNumber] = useState("");
 
+  const [showSalesModal, setShowSalesModal] = useState(false);
+
   useEffect(() => {
     // Get auth token from localStorage
     const userDetails = localStorage.getItem("userDetails");
@@ -41,14 +44,13 @@ const Home = () => {
     }
   }, []);
 
-
   const navigate = useNavigate();
 
-  useEffect(()=>{
-    if(!localStorage.getItem('userDetails')){
-      navigate('/login');
+  useEffect(() => {
+    if (!localStorage.getItem("userDetails")) {
+      navigate("/login");
     }
-  },[])
+  }, []);
   const handleGallaClick = () => {
     setShowGallaModal(true);
   };
@@ -80,21 +82,21 @@ const Home = () => {
     // setSelectedCashInOption(null);
   };
 
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOption, setSelectedOption] = useState("");
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
   };
 
-  const [selectedTailorAction, setSelectedTailorAction] = useState('');
+  const [selectedTailorAction, setSelectedTailorAction] = useState("");
   const [tailorData, setTailorData] = useState({
-    name: '',
-    code: '',
+    name: "",
+    code: "",
   });
 
   const handleTailorActionClick = (action) => {
     setSelectedTailorAction(action);
-    setTailorData({ name: '', code: '' }); // Clear form data on action change
+    setTailorData({ name: "", code: "" }); // Clear form data on action change
   };
 
   const handleTailorInputChange = (event) => {
@@ -141,13 +143,13 @@ const Home = () => {
         config
       )
       .then((response) => {
-      Alert.success('Successfully submitted!');
+        Alert.success("Successfully submitted!");
 
         console.log(response.data);
         // Handle success response
       })
       .catch((error) => {
-      Alert.error('Error submitting data');
+        Alert.error("Error submitting data");
         console.log("error", error);
         // Handle error
       });
@@ -186,12 +188,12 @@ const Home = () => {
         config
       )
       .then((response) => {
-      Alert.success('Successfully submitted!');
+        Alert.success("Successfully submitted!");
         console.log(response.data);
         // Handle success response
       })
       .catch((error) => {
-      Alert.error('Error submitting data');
+        Alert.error("Error submitting data");
 
         console.log("error", error);
         // Handle error
@@ -243,12 +245,12 @@ const Home = () => {
       )
       .then((response) => {
         console.log(response.data);
-      Alert.success('Successfully submitted!');
+        Alert.success("Successfully submitted!");
 
         // Handle success response
       })
       .catch((error) => {
-      Alert.error('Error submitting data');
+        Alert.error("Error submitting data");
 
         console.log("error", error);
         // Handle error
@@ -285,11 +287,11 @@ const Home = () => {
       )
       .then((response) => {
         console.log(response.data);
-      Alert.success('Successfully submitted!');
+        Alert.success("Successfully submitted!");
         // Handle success response
       })
       .catch((error) => {
-      Alert.error('Error submitting data');
+        Alert.error("Error submitting data");
 
         console.log("error", error);
         // Handle error
@@ -327,12 +329,12 @@ const Home = () => {
       )
       .then((response) => {
         console.log(response.data);
-      Alert.success('Successfully submitted!');
+        Alert.success("Successfully submitted!");
 
         // Handle success response
       })
       .catch((error) => {
-      Alert.error('Error submitting data');
+        Alert.error("Error submitting data");
 
         console.log("error", error);
         // Handle error
@@ -372,13 +374,21 @@ const Home = () => {
 
   return (
     <>
-      <Header/>
+      <Header />
 
       <div className="home">
         <div className="card-group">
-          <TitleCard title="Stock" color="#FF5733" onClick={()=>setShowStockModal(true)}/>
+          <TitleCard
+            title="Stock"
+            color="#FF5733"
+            onClick={() => setShowStockModal(true)}
+          />
           <TitleCard title="Galla" onClick={handleGallaClick} color="#FFC300" />
-          <TitleCard title="Sales" color="#FF5733" />
+          <TitleCard
+            title="Sales"
+            onClick={() => setShowSalesModal(true)}
+            color="#FF5733"
+          />
           <TitleCard title="Purchase" color="#33FFBD" />
           <TitleCard title="Bank" color="#338DFF" />
           <TitleCard title="Tailor Ledger" color="#8D33FF" />
@@ -386,8 +396,16 @@ const Home = () => {
           <TitleCard title="Shop Expense" color="#FF5733" />
           <TitleCard title="Personal Expense" color="#FFC300" />
           <TitleCard title="Price List" color="#FF5733" />
-          <TitleCard title="Customer Code" color="#8D33FF" onClick={()=>setShowCustomerModal(true)}/>
-          <TitleCard title="Tailor Code" color="#FF33E9" onClick={()=>setShowTailorModal(true)}/>
+          <TitleCard
+            title="Customer Code"
+            color="#8D33FF"
+            onClick={() => setShowCustomerModal(true)}
+          />
+          <TitleCard
+            title="Tailor Code"
+            color="#FF33E9"
+            onClick={() => setShowTailorModal(true)}
+          />
         </div>
 
         {/* Galla Modal */}
@@ -617,13 +635,13 @@ const Home = () => {
                       )}
                     </Form.Group>
                     <Form.Check
-      type="checkbox"
-      id="default-checkbox"
-      label="Shop Expense"
-      defaultChecked={true} // Set the checkbox to be checked initially
-      checked={true} // Use state to update checkbox state dynamically (optional)
-      onChange={()=>{}}
-    />
+                      type="checkbox"
+                      id="default-checkbox"
+                      label="Shop Expense"
+                      defaultChecked={true} // Set the checkbox to be checked initially
+                      checked={true} // Use state to update checkbox state dynamically (optional)
+                      onChange={() => {}}
+                    />
                     {/* <Form.Group controlId="reason">
                       <Form.Label>Reason</Form.Label>
                       <Form.Control
@@ -660,13 +678,13 @@ const Home = () => {
                       )}
                     </Form.Group>
                     <Form.Check
-      type="checkbox"
-      id="default-checkbox"
-      label="Personal Expense"
-      defaultChecked={true} // Set the checkbox to be checked initially
-      checked={true} // Use state to update checkbox state dynamically (optional)
-      onChange={()=>{}}
-    />
+                      type="checkbox"
+                      id="default-checkbox"
+                      label="Personal Expense"
+                      defaultChecked={true} // Set the checkbox to be checked initially
+                      checked={true} // Use state to update checkbox state dynamically (optional)
+                      onChange={() => {}}
+                    />
                     {/* <Form.Group controlId="reason">
                       <Form.Label>Reason</Form.Label>
                       <Form.Control
@@ -708,92 +726,138 @@ const Home = () => {
         {/* Add modals for other options as needed */}
 
         <Modal show={showCustomerModal} onHide={onHideModal}>
-      <Modal.Header closeButton>
-        <Modal.Title>Customer Options</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Button variant="primary" onClick={() => handleOptionClick('Create Customer')}>
-          Create Customer
-        </Button>
-        <Button variant="secondary" onClick={() => handleOptionClick('Delete Customer')}>
-          Delete Customer
-        </Button>
+          <Modal.Header closeButton>
+            <Modal.Title>Customer Options</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Button
+              variant="primary"
+              onClick={() => handleOptionClick("Create Customer")}
+            >
+              Create Customer
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => handleOptionClick("Delete Customer")}
+            >
+              Delete Customer
+            </Button>
 
-        {selectedOption === 'Create Customer' && (
-          <Form>
-            <Form.Group controlId="customerName">
-              <Form.Label>Customer Name</Form.Label>
-              <Form.Control type="text" placeholder="Enter customer name" />
-            </Form.Group>
-            <Form.Group controlId="customerCode">
-              <Form.Label>Customer Code</Form.Label>
-              <Form.Control type="text" placeholder="Enter customer code" />
-            </Form.Group>
-          </Form>
-        )}
+            {selectedOption === "Create Customer" && (
+              <Form>
+                <Form.Group controlId="customerName">
+                  <Form.Label>Customer Name</Form.Label>
+                  <Form.Control type="text" placeholder="Enter customer name" />
+                </Form.Group>
+                <Form.Group controlId="customerCode">
+                  <Form.Label>Customer Code</Form.Label>
+                  <Form.Control type="text" placeholder="Enter customer code" />
+                </Form.Group>
+              </Form>
+            )}
 
-        {selectedOption === 'Delete Customer' && (
-          <Form>
-            <Form.Group controlId="customerCode">
-              <Form.Label>Customer Code</Form.Label>
-              <Form.Control type="text" placeholder="Enter customer code" />
-            </Form.Group>
-          </Form>
-        )}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onHideModal}>
-          Close
-        </Button>
-        <Button variant="primary" disabled={!selectedOption}>
-          {selectedOption === 'Create Customer' ? 'Save Customer' : 'Delete Customer'}
-        </Button>
-      </Modal.Footer>
-    </Modal>
-    
+            {selectedOption === "Delete Customer" && (
+              <Form>
+                <Form.Group controlId="customerCode">
+                  <Form.Label>Customer Code</Form.Label>
+                  <Form.Control type="text" placeholder="Enter customer code" />
+                </Form.Group>
+              </Form>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={onHideModal}>
+              Close
+            </Button>
+            <Button variant="primary" disabled={!selectedOption}>
+              {selectedOption === "Create Customer"
+                ? "Save Customer"
+                : "Delete Customer"}
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
-    <Modal show={showTailorModal} onHide={onHideTailorModal}>
-      <Modal.Header closeButton>
-        <Modal.Title>Tailor Management</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Button variant="primary" onClick={() => handleTailorActionClick('addTailor')}>
-          Add Tailor
-        </Button>
-        <Button variant="secondary" onClick={() => handleTailorActionClick('deleteTailor')}>
-          Delete Tailor
-        </Button>
+        <Modal show={showTailorModal} onHide={onHideTailorModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Tailor Management</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Button
+              variant="primary"
+              onClick={() => handleTailorActionClick("addTailor")}
+            >
+              Add Tailor
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => handleTailorActionClick("deleteTailor")}
+            >
+              Delete Tailor
+            </Button>
 
-        {selectedTailorAction === 'addTailor' && (
-          <Form onSubmit={()=>{}}>
-            <Form.Group controlId="name">
-              <Form.Label>Tailor Name</Form.Label>
-              <Form.Control type="text" placeholder="Enter tailor name" value={tailorData.name} onChange={handleTailorInputChange} required />
-            </Form.Group>
-            <Form.Group controlId="code">
-              <Form.Label>Tailor Code</Form.Label>
-              <Form.Control type="text" placeholder="Enter tailor code" value={tailorData.code} onChange={handleTailorInputChange} required />
-            </Form.Group>
-          </Form>
-        )}
+            {selectedTailorAction === "addTailor" && (
+              <Form onSubmit={() => {}}>
+                <Form.Group controlId="name">
+                  <Form.Label>Tailor Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter tailor name"
+                    value={tailorData.name}
+                    onChange={handleTailorInputChange}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="code">
+                  <Form.Label>Tailor Code</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter tailor code"
+                    value={tailorData.code}
+                    onChange={handleTailorInputChange}
+                    required
+                  />
+                </Form.Group>
+              </Form>
+            )}
 
-        {selectedTailorAction === 'deleteTailor' && (
+            {selectedTailorAction === "deleteTailor" && (
+              <>
+                <p>Tailor Code</p>
+                <Form.Control
+                  type="text"
+                  placeholder="Tailor Code"
+                  id="code"
+                  value={tailorData.code}
+                  onChange={handleTailorInputChange}
+                />
+              </>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary" type="submit" onClick={() => {}}>
+              {selectedTailorAction === "addTailor"
+                ? "Save Tailor"
+                : "Delete Tailor"}
+            </Button>
+            <Button variant="secondary" onClick={onHideTailorModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        {authToken && (
           <>
-          <p>Tailor Code</p>
-          <Form.Control type="text" placeholder="Tailor Code" id="code" value={tailorData.code} onChange={handleTailorInputChange} />
+            <StockManagementModal
+              showStockModal={showStockModal}
+              setShowStockModal={setShowStockModal}
+              authToken={authToken}
+            />
+            <SalesModal
+              showStockModal={showSalesModal}
+              setShowStockModal={setShowSalesModal}
+              authToken={authToken}
+            />
           </>
         )}
-      </Modal.Body>
-      <Modal.Footer>
-      <Button variant="primary" type="submit" onClick={()=>{}}>
-          {selectedTailorAction === 'addTailor' ? 'Save Tailor' : 'Delete Tailor'}
-          </Button>
-        <Button variant="secondary" onClick={onHideTailorModal}>
-          Close
-        </Button>
-      </Modal.Footer>
-    </Modal>
-    <StockManagementModal onHideStockModal={()=>setShowStockModal(false)} showStockModal={showStockModal}/>
       </div>
     </>
   );
