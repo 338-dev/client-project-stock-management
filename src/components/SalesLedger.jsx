@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Modal, Table } from 'react-bootstrap';
+import { Button, Col, Form, Modal, Row, Table } from 'react-bootstrap';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import Alert from './Alert';
@@ -17,7 +17,7 @@ function StockSalesTable() {
   const [authToken, setAuthToken] = useState("");
   const [selectedStockType, setSelectedStockType] = useState(null);
   const [selectedSaleSizes, setSelectedSaleSizes] = useState([]);
-  // const [sizes, setSizes] = useState([]);
+  const [sizes, setSizes] = useState([]);
 
   const handleStockTypeChange = (event) => {
     setSelectedStockType(event.target.value);
@@ -25,6 +25,32 @@ function StockSalesTable() {
 
   };
 
+  const RenderSaleSizes = ({ stockTypeId, quantities }) => {
+    // Find the stock type based on stockTypeId
+    const stockType = stockTypes.find((type) => type.id === stockTypeId);
+
+    if (!stockType || !stockType.size) {
+      return null;
+    }
+
+    const sizes = stockType.size.split(',');
+
+    return (
+      <ul>
+        {sizes.map((size, index) => (
+          <li key={index}>{`${size}: ${quantities.split(',')?.[index] || 0}`}</li>
+        ))}
+      </ul>
+    );
+  };
+  const handleSizeQuantityChange = (index, value) => {
+    // Update the quantity for the selected size in the state
+    const updatedSizes = [...selectedSaleSizes];
+    updatedSizes[index] = { size: sizes[index], quantity: value };
+    setSelectedSaleSizes(updatedSizes);
+  };
+
+console.log(selectedSaleSizes,"lllllllllllllllllll");
   const RenderStockSizes = () => {
     if (!selectedStockType) {
       return null;
@@ -34,6 +60,7 @@ function StockSalesTable() {
     if (!selectedType || !selectedType.size) {
       return null;
     }
+    console.log(selectedSaleSizes);
 
     const sizes = selectedType.size.split(',');
     const handleSizeQuantityChange = (index, value) => {
@@ -44,24 +71,29 @@ function StockSalesTable() {
     };
   
     return (
-      <div className="mt-3">
-        {sizes.map((size, index) => (
-          <div key={index} className="mb-3">
-            <div className="alert alert-primary" role="alert">
-              {size}
+      sizes.length > 0 &&
+        <Row>
+          <Col>
+            <h5>Sizes and quantity</h5>
+            <div className="d-flex flex-wrap text-center justify-content-center">
+              {sizes.map((size, index) => (
+                <div key={index} className="mb-3 p-3 border rounded mx-2">
+                  <div className="align-items-center">
+                    <div className="mr-2"><strong>{size}:</strong></div>
+                    <Form.Control
+                      type="number"
+                      style={{ width: '70px' }}
+                      // placeholder="Quantity"
+                      value={selectedSaleSizes?.[index]?.quantity}
+                      onChange={(e) => handleSizeQuantityChange(index, e.target.value)}
+                      className="mr-2"
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
-            <Form.Group controlId={`quantity-${index}`}>
-              <Form.Label>Quantity for {size}</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder={`Enter quantity for ${size}`}
-                value={selectedSaleSizes[index]?.quantity || ''}
-                onChange={(e) => handleSizeQuantityChange(index, e.target.value)}
-              />
-            </Form.Group>
-          </div>
-        ))}
-      </div>
+          </Col>
+        </Row>
     );
   };
 
@@ -77,7 +109,17 @@ function StockSalesTable() {
       const salesResponse = await axios.get(STOCK_SALES_URL, config);
       const typesResponse = await axios.get(STOCK_TYPES_URL, config);
 
-      setSales(salesResponse.data);
+      const allStockTypes = await typesResponse.data;
+      const salesData = await salesResponse.data;
+
+      const salesWithSizes = salesData.map((sale) => {
+        const stockType = allStockTypes.find((type) => type.id === sale.stock_type);
+        return {
+          ...sale,
+          stockType,
+        };
+      });
+      setSales(salesWithSizes);
       setStockTypes(typesResponse.data);
     } catch (error) {
       console.log(error);
@@ -118,13 +160,27 @@ function StockSalesTable() {
   const handleEditClick = (sale) => {
     setSelectedSale(sale);
     setEditMode(true);
+    setSelectedStockType(null)
+    setSelectedSaleSizes([])
+    setSizes([]);
   };
 
+console.log(selectedSale?.stock_type);
   const handleEditSubmit = async () => {
     const updatedSale = new FormData();
+
+    const quantitiesArray = selectedSaleSizes?.map((sizeObj) => sizeObj?.quantity || 0);
+    const tmp = selectedSaleSizes?.map((sizeObj) => sizeObj?.quantity) || [];
+
+    console.log(tmp,"ppppppppp");
+    if(!selectedStockType || (selectedStockType &&  (tmp.length===0 || tmp?.includes('')))) {
+      Alert.error("Fill data properly");
+      return;
+
+    }
     updatedSale.append("customer_name", selectedSale?.customer_name || '');
     updatedSale.append("amount", selectedSale?.amount || '');
-    updatedSale.append("quantity", selectedSale?.quantity || '');
+    updatedSale.append("quantity", quantitiesArray.toString() || '');
     updatedSale.append("payment_type", selectedSale?.payment_type || '');
     updatedSale.append("stock_type", selectedSale?.stock_type || '');
     updatedSale.append("bill_number", selectedSale?.bill_number || '');
@@ -148,7 +204,23 @@ function StockSalesTable() {
   };
 
   const handleInputChange = (event) => {
-    console.log(event.target);
+    console.log(event.target.value);
+    if (event.target.id === 'stock_type') {
+      // Clear sizes when stock type changes
+      setSelectedSaleSizes([]);
+      setSelectedStockType(event.target.value);
+      const selectedType = stockTypes?.find(type => type.stock_types === event.target.value);
+    const stockSizes = selectedType?.size?.split(',');
+    const initialSizesState = stockSizes.map(size => ({ size, quantity: '' }));
+setSelectedSaleSizes(initialSizesState)
+    console.log(stockSizes,'[[[[[[[[[[[[[[[[[[[[[[[');
+      setSizes(stockSizes);
+console.log(sizes);
+      // Fetch sizes for the selected stock type
+      // if (value) {
+      //   fetchStockSizes(value);
+      // }
+    } else
     setSelectedSale({
       ...selectedSale,
       [event.target.id]: event.target.value,
@@ -176,10 +248,38 @@ function StockSalesTable() {
     fetchData(token);
   }, []);
 
+  const RenderSaleSizesEdit = ({ sizes, quantities, handleSizeQuantityChange }) => {
+    if (!sizes || sizes.length === 0) {
+      return null;
+    }
+  
+    return (
+      <div className="mt-3">
+        {sizes.map((size, index) => (
+          <div key={index} className="mb-3">
+            <div className="alert alert-primary" role="alert">
+              {size}
+            </div>
+            <Form.Group controlId={`quantity-${index}`}>
+              <Form.Label>Quantity for {size}</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder={`Enter quantity for ${size}`}
+                value={quantities[index] || ''}
+                onChange={(e) => handleSizeQuantityChange(index, e.target.value)}
+              />
+            </Form.Group>
+          </div>
+        ))}
+      </div>
+    );
+  };
   const stockTypesMap = stockTypes.reduce((map, type) => {
     map[type.id] = type.stock_types;
     return map;
   }, {});
+  console.log(selectedStockType)
+
   return (
     <>
     <Header/>
@@ -206,6 +306,7 @@ function StockSalesTable() {
               <th>Quantity</th>
               <th>Payment Type</th>
               <th>Stock Type</th>
+              <th>Sizes and Quantity</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -219,6 +320,9 @@ function StockSalesTable() {
                 <td>{sale.quantity || '—'}</td>
                 <td>{sale.payment_type || '—'}</td>
                 <td>{stockTypesMap[sale.stock_type] || '—'}</td>
+                <td>
+                <RenderSaleSizes stockTypeId={sale.stock_type} quantities={sale.quantity} />
+                </td>
                 <td className='text-center'>
                   <Button
                     variant="primary"
@@ -297,23 +401,48 @@ function StockSalesTable() {
                 </Form.Control>
               </Form.Group>
               <Form.Group controlId="stock_type">
-            <Form.Label>Stock Type</Form.Label>
-            <Form.Control
-              as="select"
-              value={stockTypesMap[selectedSale?.stock_type] || ''}
-              id={selectedSale?.stock_type}
-              onChange={(e)=>{handleInputChange({target: { value: stockTypesMap[e.target.id], id: 'stock_type'}}); handleStockTypeChange({target: { value: selectedSale?.stock_type}});}}
-            >
-              <option value="">Select Stock Type</option>
-              {stockTypes.map((type) => (
-                <option key={type.id} value={type.stock_types}>
-                  {type.stock_types}
-                </option>
+              <Form.Label>Stock Type</Form.Label>
+              <Form.Control
+                as="select"
+                value={selectedStockType || ''}
+                // id={selectedSale?.stock_type}
+                onChange={(e) => {
+                  handleInputChange(e);
+                  // handleStockTypeChange({ target: { value: selectedSale?.stock_type } });
+                }}
+              >
+                <option value="">Select Stock Type</option>
+                {stockTypes.map((type) => (
+                  <option key={type.id} value={type.stock_types}>
+                    {type.stock_types}
+                  </option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+{/* <RenderStockSizes/> */}
+{sizes?.length> 0 && <Row>
+          <Col>
+            <h5>Sizes and quantity</h5>
+            <div className="d-flex flex-wrap text-center justify-content-center">
+              {sizes.map((size, index) => (
+                <div key={index} className="mb-3 p-3 border rounded mx-2">
+                  <div className="align-items-center">
+                    <div className="mr-2"><strong>{size}:</strong></div>
+                    <Form.Control
+                      type="number"
+                      style={{ width: '70px' }}
+                      // placeholder="Quantity"
+                      value={selectedSaleSizes?.[index]?.quantity}
+                      onChange={(e) => handleSizeQuantityChange(index, e.target.value)}
+                      className="mr-2"
+                    />
+                  </div>
+                </div>
               ))}
-            </Form.Control>
-          </Form.Group>
-
-          <RenderStockSizes/>            
+            </div>
+          </Col>
+        </Row>
+}
           </Form>
           </Modal.Body>
           <Modal.Footer>

@@ -9,6 +9,7 @@ import axios from "axios";
 import Alert from "../components/Alert";
 import TransactionTable from "../components/CashInCashOut";
 import { BASE_URL } from "../constant/constant";
+import BankTransactionModal from "../components/BankModal";
 
 const Home = () => {
   const [showGallaModal, setShowGallaModal] = useState(false);
@@ -17,6 +18,7 @@ const Home = () => {
   const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [showTailorModal, setShowTailorModal] = useState(false);
   const [showStockModal, setShowStockModal] = useState(false);
+  const [BankModal, setBankModal] = useState(false);
   const [customerCode, setCustomerCode] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [amount, setAmount] = useState("");
@@ -408,8 +410,9 @@ const Home = () => {
         <div className="card-group">
           <TitleCard title="Stock" color="#FF5733" onClick={() => setShowStockModal(true)} />
           <TitleCard title="Galla" onClick={handleGallaClick} color="#FFC300" />
-          <TitleCard title="Sales" color="#FF5733" onClick={()=>{}}/>
+          <TitleCard title="Sales Ledger" color="#FF5733" onClick={()=>{navigate('/sales-ledger')}}/>
           <TitleCard title="Purchase" color="#33FFBD" />
+          <TitleCard title="Bank" color="#FFC300" onClick={()=>setBankModal(true)}/>
           <TitleCard title="Bank Ledger" color="#338DFF" onClick={()=>navigate('/stock-bank-ledger')}/>
           <TitleCard title="Tailor Ledger" color="#8D33FF" />
           <TitleCard title="Customer Ledger" color="#FF33E9" onClick={()=>{navigate('/customer-ledger')}}/>
@@ -893,6 +896,7 @@ const Home = () => {
           </Modal.Footer>
         </Modal>
         <StockManagementModal onHideStockModal={() => setShowStockModal(false)} showStockModal={showStockModal} />
+        <BankTransactionModal handleClose={()=>{setBankModal(false)}} show={BankModal} auth={authToken}/>
       </div>
     </>
   );

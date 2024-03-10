@@ -19,7 +19,7 @@ const App = () => {
         <Route path="/register" element={<Registration />} />
         <Route path="/galla-ledger" element={<TransactionTable />} />
         <Route path="/stock-bank-ledger" element={<BankLedger />} />
-        {/* <Route path="/sales-ledger" element={<StockSalesTable />} /> */}
+        <Route path="/sales-ledger" element={<StockSalesTable />} />
         <Route path="/customer-ledger" element={<CustomerPaymentTable />} />
         <Route path="/stock-ledger" element={<StockTable />} />
         <Route path="/" element={<Home />} /> {/* Replace Home component with your protected route if needed */}
